@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "263732984967",
+    "firebase_url": "https://user-profiles-69970-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "user-profiles-69970",
+    "storage_bucket": "user-profiles-69970.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263732984967:android:730064227f3e86ad950c22",
+        "android_client_info": {
+          "package_name": "com.example.garlicapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ-pTQ4AR6C6HlLHqr78jBQcntnHq8cXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263732984967:android:b2f112dd052da750950c22",
+        "android_client_info": {
+          "package_name": "com.example.img_path"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ-pTQ4AR6C6HlLHqr78jBQcntnHq8cXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

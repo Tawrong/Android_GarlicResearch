@@ -1,0 +1,25 @@
+<resources>
+
+    <string-array name="grapOptions">
+        <item>All</item>
+        <item>Temperature</item>
+        <item>Humidity</item>
+    </string-array>
+    <string-array name="lumensData">
+        <item>All</item>
+        <item>Lumens1</item>
+        <item>Lumens2</item>
+        <item>Lumens3</item>
+        <item>Lumens4</item>
+    </string-array>
+
+    <string-array name="Sensor_Datas">
+        <item>All</item>
+        <item>Temperature</item>
+        <item>Humidity</item>
+        <item>Lumens1</item>
+        <item>Lumens2</item>
+        <item>Lumens3</item>
+        <item>Lumens4</item>
+    </string-array>
+</resources>

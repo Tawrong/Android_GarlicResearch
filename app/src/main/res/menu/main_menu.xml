@@ -1,0 +1,74 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home_nav"
+        android:icon="@drawable/home_icon"
+        android:title="Home"
+        />
+    <item
+        android:id="@+id/user_info"
+        android:icon="@drawable/baseline_person_24"
+        android:title="Profile" />
+    <group android:checkableBehavior="single">
+        <item android:title="Operations">
+            <menu>
+                <item
+                    android:id="@+id/control_panel"
+                    android:icon="@drawable/baseline_calendar_month_24"
+                    android:title="Schedule"
+                    />
+                <item
+                    android:id="@+id/controls"
+                    android:icon="@drawable/manual_icon"
+                    android:title="Controls"
+                    />
+                <item
+                    android:id="@+id/sensor_data"
+                    android:icon="@drawable/chart"
+                    android:title="Sensor Datas"
+                    />
+            </menu>
+        </item>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item android:title="Authenticate">
+            <menu>
+                <group>
+                    <item
+                        android:id="@+id/signout"
+                        android:icon="@drawable/logout_icon"
+                        android:title="Sign Out"/>
+                </group>
+            </menu>
+        </item>
+    </group>
+
+    <group android:checkableBehavior="none" android:enabled="false">
+        <item android:title="Reminder">
+            <menu>
+                <group >
+                    <item
+                        android:id="@+id/DateStart"
+                        android:icon="@drawable/baseline_calendar_month_24"
+                        android:iconTint="@color/black"
+                        android:title="Date"/>
+                    <item
+                        android:id="@+id/timeOnStart"
+                        android:icon="@drawable/baseline_access_time_24"
+                        android:iconTint="@color/black"
+                        android:checkable="false"
+                        android:checked="false"
+                        android:title="Time On"/>
+                    <item
+                        android:id="@+id/timeOffEnd"
+                        android:checked="false"
+                        android:icon="@drawable/baseline_timer_off_24"
+                        android:iconTint="@color/black"
+                        android:checkable="false"
+                        android:title="Time Off"/>
+                </group>
+            </menu>
+        </item>
+    </group>
+
+</menu>

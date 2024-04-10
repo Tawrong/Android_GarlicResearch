@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="secondary">#D6D6D6</color>
+    <color name="semi_transparent_black">#80000000</color>
+    <color name="deep_green">#228B22</color>
+
+    <color name="test">#989898</color>
+    <color name="green">#81C784</color>
+    <color name="colorAccent">#565554</color>
+    <color name="deep_blue">#0C2D57</color>
+    <color name="transparent">#00000000 </color>
+    <color name="greenLightBackground">#2790EE90</color>
+</resources>

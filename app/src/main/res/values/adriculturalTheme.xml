@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/styles.xml -->
+<resources>
+
+    <style name="WhiteTextToolbarStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="navigationIcon">@drawable/baseline_menu_24_toolbar</item>
+        <item name="android:tint">#FFFFFF</item>
+        <item name="android:height">50dp</item>
+    </style>
+
+</resources>
