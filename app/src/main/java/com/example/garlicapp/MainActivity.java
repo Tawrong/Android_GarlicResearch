@@ -6,22 +6,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     Button loginbtn;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
-    ImageView googlebtn;
+    CardView googlebtn;
     private LottieAnimationView loading_animation;
     String[] permission = new String[]{
             Manifest.permission.POST_NOTIFICATIONS
@@ -95,17 +99,73 @@ public class MainActivity extends AppCompatActivity {
                 password.setSelection(password.getText().length());
             }
         });
+        password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0) {
+                    // Change the tint color of the ImageButton when text is not empty
+                    showpass.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.greenText));
+                } else {
+                    // Reset the tint color to default when text is empty
+                    showpass.setColorFilter(null);
+                }
+            }
+        });
+
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Drawable[] drawables = email.getCompoundDrawables();
+                Drawable endDrawable = drawables[2]; // Assuming the end drawable is at index 2
+
+                // Modify the tint of the end drawable
+                if (s.length() > 0) {
+                    endDrawable.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.greenText), PorterDuff.Mode.SRC_IN);
+                } else {
+                    // If you want to reset the tint to its original color, you can remove the color filter
+                    endDrawable.setColorFilter(null);
+                }
+
+                // Set the modified drawable back to the EditText
+                email.setCompoundDrawablesWithIntrinsicBounds(
+                        drawables[0], // left
+                        drawables[1], // top
+                        endDrawable, // right
+                        drawables[3] // bottom
+                );
+            }
+        });
         forgotpass.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        forgotpass.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.black));
+                        forgotpass.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.secondary));
                         forgotpass.setAlpha(0.7f);
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        forgotpass.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white));
+                        forgotpass.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.greenText));
                         forgotpass.setAlpha(0.6f);
                 }
                 return false;
@@ -117,12 +177,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        create_new_user.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.black));
+                        create_new_user.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.secondary));
                         create_new_user.setAlpha(0.7f);
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        create_new_user.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white));
+                        create_new_user.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.greenText));
                         create_new_user.setAlpha(0.7f);
                 }
                 return false;

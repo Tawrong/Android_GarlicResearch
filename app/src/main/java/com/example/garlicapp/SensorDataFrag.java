@@ -1,40 +1,31 @@
 package com.example.garlicapp;
 
-import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 
 import org.bson.Document;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import io.realm.Realm;
@@ -47,63 +38,27 @@ import io.realm.mongodb.mongo.iterable.MongoCursor;
 
 public class SensorDataFrag extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public SensorDataFrag() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AutoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SensorDataFrag newInstance(String param1, String param2) {
-        SensorDataFrag fragment = new SensorDataFrag();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     private EditText dates, dates2;
 
     private String filter_date, filter_date2;
     private AppConfiguration config;
-    private Spinner spinner, spinner2;
     private App app;
-    private User user;
-    private Object temperature, humidity;
-    private String db_time;
-    private Document filter, filter2;
-    private LineChart lineChart, lineChart2;
-    private Button reset_btn;
-    private Handler handler;
-    private boolean temp, humid, lumens1, lumens2, lumens3, lumens4 = false;
-    private Legend legend, legend2;
-    private TextView temperaturedata, humiditydata, lumensData1, lumensData2, lumensData3, lumensData4;
-    private MongoCollection<Document> collection;
+    private Document filter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private LineChart lineChart;
+    private Handler handler;
+    private User user;
+    private boolean temp, humid, lumens1, lumens2, lumens3, lumens4 = false;
+
+    private List<Entry> temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set;
+
+    private Spinner spinner;
+    private Object temperature, humidity, l1, l2, l3,l4;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,65 +68,15 @@ public class SensorDataFrag extends Fragment {
         Realm.init(getActivity());
         config = new AppConfiguration.Builder(getString(R.string.App_id)).build();
         app = new App(config);
-        dates = rootview.findViewById(R.id.editTextDate);
         lineChart = rootview.findViewById(R.id.lineChart);
-        lineChart2 = rootview.findViewById(R.id.lineChart2);
         spinner = rootview.findViewById(R.id.SpinnerGraph);
-        spinner2 = rootview.findViewById(R.id.spinner2);
-
-        dates2 = rootview.findViewById(R.id.editText2);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
+        ArrayAdapter<CharSequence> spinnerAdapter= ArrayAdapter.createFromResource(
                 getActivity(),
-                R.array.lumensData,
+                R.array.Sensor_Datas,
                 R.layout.spinner_design
         );
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(adapter2);
-        spinner2.setSelection(0);
-        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String choices = parent.getItemAtPosition(position).toString();
-                if (choices.equals("All")) {
-                    lumens1 = true;
-                    lumens2 = true;
-                    lumens3 = true;
-                    lumens4 = true;
-                } else if (choices.equals("Lumens1")) {
-                    lumens1 = true;
-                    lumens2 = false;
-                    lumens3 = false;
-                    lumens4 = false;
-                } else if (choices.equals("Lumens2")) {
-                    lumens1 = false;
-                    lumens2 = true;
-                    lumens3 = false;
-                    lumens4 = false;
-                } else if (choices.equals("Lumens3")) {
-                    lumens1 = false;
-                    lumens2 = false;
-                    lumens3 = true;
-                    lumens4 = false;
-                } else if (choices.equals("Lumens4")) {
-                    lumens1 = false;
-                    lumens2 = false;
-                    lumens3 = false;
-                    lumens4 = true;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getActivity(),
-                R.array.grapOptions,
-                android.R.layout.simple_spinner_item
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
         spinner.setSelection(0);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -180,324 +85,140 @@ public class SensorDataFrag extends Fragment {
                 if (choices.equals("All")) {
                     temp = true;
                     humid = true;
-                } else if (choices.equals("Temperature")) {
+                    lumens1 = true;
+                    lumens2 = true;
+                    lumens3 = true;
+                    lumens4 = true;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                }
+                else if (choices.equals("Temperature")) {
+                    temp = true;
                     humid = false;
-                    temp = true;
-                } else if (choices.equals("Humidity")) {
-                    humid = true;
+                    lumens1 = false;
+                    lumens2 = false;
+                    lumens3 = false;
+                    lumens4 = false;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                }
+                else if (choices.equals("Humidity")) {
                     temp = false;
-                } else {
-                    temp = true;
                     humid = true;
+                    lumens1 = false;
+                    lumens2 = false;
+                    lumens3 = false;
+                    lumens4 = false;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                }
+                else if (choices.equals("Lumens1")) {
+                    temp = false;
+                    humid = false;
+                    lumens1 = true;
+                    lumens2 = false;
+                    lumens3 = false;
+                    lumens4 = false;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                } else if (choices.equals("Lumens2")) {
+                    temp = false;
+                    humid = false;
+                    lumens1 = false;
+                    lumens2 = true;
+                    lumens3 = false;
+                    lumens4 = false;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                } else if (choices.equals("Lumens3")) {
+                    temp = false;
+                    humid = false;
+                    lumens1 = false;
+                    lumens2 = false;
+                    lumens3 = true;
+                    lumens4 = false;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
+                } else if (choices.equals("Lumens4")) {
+                    temp = false;
+                    humid = false;
+                    lumens1 = false;
+                    lumens2 = false;
+                    lumens3 = false;
+                    lumens4 = true;
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        handler = new Handler();
-        handler.post(sensorData);
-        dates.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDatePickerDialog();
-            }
-        });
-        dates2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog2();
-            }
-        });
 
+            }
+        });
+        temperatureSet = new ArrayList<>();
+        humiditySet = new ArrayList<>();
+        lumens1Set = new ArrayList<>();
+        lumens2Set = new ArrayList<>();
+        lumens3Set = new ArrayList<>();
+        lumens4Set = new ArrayList<>();
+        login();
         return rootview;
     }
 
-    private final Runnable sensorData = new Runnable() {
-        @Override
-        public void run() {
-            getsensorData();
-            handler.postDelayed(this, 5000);
-        }
-    };
+    private void login(){
+        app.loginAsync(Credentials.anonymous(), it->{
+            temperatureSet.clear();
+            humiditySet.clear();
+            lumens1Set.clear();
+            lumens2Set.clear();
+            lumens3Set.clear();
+            lumens4Set.clear();
+           if (it.isSuccess()){
+               user = app.currentUser();
+               MongoCollection<Document> collection = user.getMongoClient("garlicgreenhouse")
+                       .getDatabase("GarlicGreenhouse").getCollection("AveragePerDay");
 
-    private void showDatePickerDialog2() {
+               new Handler(Looper.getMainLooper()).post(()->{
 
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+                   Document sortTime = new Document("_id", 1);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
-                // Do something with the selected date
-                String selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
-                // You can use the selected date as needed
-                // For example, update the EditText with the selected date
-                dates2.setText(selectedDate);
-            }
-        }, year, month, day);
-
-        datePickerDialog.show();
-        dates2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter_date2 = dates2.getText().toString();
-//                secondGraph();
-                dates2.removeTextChangedListener(this);
-            }
+                   search(collection, sortTime);
+               });
+           }
         });
     }
 
-    private void showDatePickerDialog() {
+    private void search(MongoCollection<Document> collection,Document sortTime){
 
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        collection.find().sort(sortTime).iterator().getAsync(result1 -> {
+            if (result1.isSuccess()){
+                for (MongoCursor<Document> cursor = result1.get();cursor.hasNext();){
+                    Document document = cursor.next();
+                    temperature = document.get("averageTemperature");
+                    humidity = document.get("averageHumidity");
+                    l1 = document.get("averageLumens1");
+                    l2 = document.get("averageLumens2");
+                    l3 = document.get("averageLumens3");
+                    l4 = document.get("averageLumens4");
 
-        // Create a new DatePickerDialog and show it
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
-                // Do something with the selected date
-                String selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
-                // You can use the selected date as needed
-                // For example, update the EditText with the selected date
-                dates.setText(selectedDate);
-            }
-        }, year, month, day);
-
-        datePickerDialog.show();
-        dates.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                filter_date = dates.getText().toString();
-                getsensorData();
-                dates.removeTextChangedListener(this);
-            }
-        });
-
-    }
-
-    class DecimalFormatValueFormatter extends ValueFormatter {
-        private final DecimalFormat format;
-
-        public DecimalFormatValueFormatter() {
-            this.format = new DecimalFormat("0.00");
-        }
-
-        @Override
-        public String getAxisLabel(float value, AxisBase axis) {
-            return format.format(value);
-        }
-    }
-
-    private void getsensorData() {
-        app.loginAsync(Credentials.anonymous(), it -> {
-            if (it.isSuccess()) {
-                user = app.currentUser();
-                if (user != null) {
-                    collection = user.getMongoClient("garlicgreenhouse")
-                            .getDatabase("GarlicGreenhouse").getCollection("sensor_data");
-
-                    if (filter_date == null) {
-                        filter = new Document();
-                    } else {
-                        filter = new Document("date", filter_date);
+                    if (converttoString(temperature) != null && Float.parseFloat(converttoString(temperature))>0){
+                        temperatureSet.add(new Entry(temperatureSet.size(), Float.parseFloat(converttoString(temperature))));
                     }
-                    Document sort = new Document().append("date", 1).append("time", 1);
-                    collection.find(filter).sort(sort).iterator().getAsync(result -> {
-                        List<Entry> temperatureEntries = new ArrayList<>();
-                        List<Entry> humidityEntries = new ArrayList<>();
-                        List<Entry> lumens1Entries = new ArrayList<>();
-                        List<Entry> lumens2Entries = new ArrayList<>();
-                        List<Entry> lumens3Entries = new ArrayList<>();
-                        List<Entry> lumens4Entries = new ArrayList<>();
-                        if (result.isSuccess()) {
-                            for (MongoCursor<Document> its = result.get(); its.hasNext(); ) {
-                                Document document = its.next();
-                                temperature = document.get("temperature");
-                                humidity = document.get("humidity");
-                                db_time = document.getString("time");
-                                Object lumens1 = document.get("lumens1");
-                                Object lumens2 = document.get("lumens2");
-                                Object lumens3 = document.get("lumens3");
-                                Object lumens4 = document.get("lumens4");
-
-                                if (converttoString(temperature) != null){
-                                    temperatureEntries.add(new Entry(temperatureEntries.size(), Float.parseFloat(converttoString(temperature))));
-                                }
-                                if (converttoString(humidity) !=null){
-                                    humidityEntries.add(new Entry(humidityEntries.size(), Float.parseFloat(converttoString(humidity))));
-                                }
-                                if (converttoString(lumens1) != null) {
-                                    lumens1Entries.add(new Entry(lumens1Entries.size(), Float.parseFloat(converttoString(lumens1))));
-                                }
-                                if (converttoString(lumens2) != null) {
-                                    lumens2Entries.add(new Entry(lumens2Entries.size(), Float.parseFloat(converttoString(lumens2))));
-                                }
-                                if (converttoString(lumens3) != null) {
-                                    lumens3Entries.add(new Entry(lumens3Entries.size(), Float.parseFloat(converttoString(lumens3))));
-                                }
-                                if (converttoString(lumens4) != null) {
-                                    lumens4Entries.add(new Entry(lumens4Entries.size(), Float.parseFloat(converttoString(lumens4))));
-                                }
-                            }
-                            Description description = new Description();
-                            LineDataSet temperatureDataSet = new LineDataSet(temperatureEntries, "Temperature");
-                            temperatureDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                            temperatureDataSet.setCubicIntensity(0.2f);
-                            temperatureDataSet.setColor(Color.BLUE);
-                            temperatureDataSet.setValueTextColor(Color.RED);
-                            temperatureDataSet.setDrawCircles(false);
-                            temperatureDataSet.setLineWidth(2f);
-                            temperatureDataSet.setValueTextSize(12f);
-
-                            LineDataSet humidityDataSet = new LineDataSet(humidityEntries, "Humidity");
-                            humidityDataSet.setColor(Color.GREEN);
-                            humidityDataSet.setValueTextColor(Color.RED);
-                            humidityDataSet.setDrawCircles(false);
-                            humidityDataSet.setLineWidth(2f);
-                            humidityDataSet.setValueTextSize(12f);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                            LineDataSet lumens1DataSet = new LineDataSet(lumens1Entries, "Lumens 1");
-                            lumens1DataSet.setColor(Color.BLACK);
-                            lumens1DataSet.setValueTextColor(Color.RED);
-                            lumens1DataSet.setDrawCircles(false);
-                            lumens1DataSet.setLineWidth(2f);
-                            lumens1DataSet.setValueTextSize(12f);
-                            LineDataSet lumens2DataSet = new LineDataSet(lumens2Entries, "Lumens 2");
-                            lumens2DataSet.setColor(Color.YELLOW);
-                            lumens2DataSet.setValueTextColor(Color.RED);
-                            lumens2DataSet.setDrawCircles(false);
-                            lumens2DataSet.setLineWidth(2f);
-                            lumens2DataSet.setValueTextSize(12f);
-                            LineDataSet lumens3DataSet = new LineDataSet(lumens3Entries, "Lumens 3");
-                            lumens3DataSet.setColor(Color.GREEN);
-                            lumens3DataSet.setValueTextColor(Color.RED);
-                            lumens3DataSet.setDrawCircles(false);
-                            lumens3DataSet.setLineWidth(2f);
-                            lumens3DataSet.setValueTextSize(12f);
-                            LineDataSet lumens4DataSet = new LineDataSet(lumens4Entries, "Lumens 4");
-                            lumens4DataSet.setColor(Color.RED);
-                            lumens4DataSet.setValueTextColor(Color.GREEN);
-                            lumens4DataSet.setDrawCircles(false);
-                            lumens4DataSet.setLineWidth(2f);
-                            lumens4DataSet.setValueTextSize(12f);
-
-                            if (temp && humid) {
-                                LineData lineData = new LineData(temperatureDataSet, humidityDataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart.setData(lineData);
-                                description.setText("All Data");
-                            } else if (temp) {
-                                LineData lineData = new LineData(temperatureDataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart.setData(lineData);
-                                description.setText("Temperature Time Chart");
-                            } else if (humid) {
-                                LineData lineData = new LineData(humidityDataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart.setData(lineData);
-                                description.setText("Humidity Chart");
-                            }
-                            if (lumens1 && lumens2 && lumens3 && lumens4) {
-                                LineData lineData = new LineData(lumens1DataSet, lumens2DataSet, lumens3DataSet, lumens4DataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart2.setData(lineData);
-                                description.setText("All Data");
-                            } else if (lumens1) {
-                                LineData lineData = new LineData(lumens1DataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart2.setData(lineData);
-                                description.setText("Lumens 1");
-                            } else if (lumens2) {
-                                LineData lineData = new LineData(lumens2DataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart2.setData(lineData);
-                                description.setText("Lumens 2");
-                            } else if (lumens3) {
-                                LineData lineData = new LineData(lumens3DataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart2.setData(lineData);
-                                description.setText("Lumens 3");
-                            } else if (lumens4) {
-                                LineData lineData = new LineData(lumens4DataSet);
-                                lineData.setValueFormatter(new DecimalFormatValueFormatter());
-                                lineChart2.setData(lineData);
-                                description.setText("Lumens 1");
-                            }
-                            legend2 = lineChart2.getLegend();
-                            XAxis xAxis = lineChart2.getXAxis();
-                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-                            xAxis.setGranularity(10f);
-                            xAxis.setLabelCount(5);
-                            xAxis.setGranularityEnabled(true);
-                            YAxis leftYAxis = lineChart2.getAxisLeft();
-                            leftYAxis.setTextColor(Color.BLACK);
-                            leftYAxis.setAxisMinimum(0f);
-                            YAxis rightYAxis = lineChart2.getAxisRight();
-                            rightYAxis.setTextColor(Color.BLACK);
-                            rightYAxis.setAxisMinimum(0f);
-                            legend2.setTextColor(Color.BLACK);
-                            description.setTextColor(Color.BLACK);
-                            lineChart2.setDescription(description);
-                            lineChart2.setDrawGridBackground(true);
-                            lineChart2.setPinchZoom(true);
-
-
-                            legend = lineChart.getLegend();
-                            XAxis xAxis2 = lineChart.getXAxis();
-                            xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
-                            xAxis2.setLabelCount(5);
-                            xAxis2.setGranularity(10f);
-                            xAxis2.setGranularityEnabled(true);
-
-
-                            YAxis leftYAxis2 = lineChart.getAxisLeft();
-                            leftYAxis2.setTextColor(Color.BLACK);
-                            leftYAxis2.setAxisMinimum(0f);
-
-                            YAxis rightYAxis2 = lineChart.getAxisRight();
-                            rightYAxis2.setTextColor(Color.BLACK);
-                            rightYAxis2.setAxisMinimum(0f);
-
-                            legend.setTextColor(Color.BLACK);
-                            description.setTextColor(Color.BLACK);
-                            lineChart.setDescription(description);
-                            lineChart.setDrawGridBackground(true);
-                            lineChart.setPinchZoom(true);
-                            lineChart.invalidate();
-                            lineChart2.invalidate();
-                        }
-                    });
+                    if (converttoString(humidity)!= null&& Float.parseFloat(converttoString(humidity))>0){
+                        humiditySet.add(new Entry(humiditySet.size(), Float.parseFloat(converttoString(humidity))));
+                    }
+                    if (converttoString(l1)!= null&& Float.parseFloat(converttoString(l1))>0){
+                        lumens1Set.add(new Entry(lumens1Set.size(), Float.parseFloat(converttoString(l1))));
+                    }
+                    if (converttoString(l2)!= null&& Float.parseFloat(converttoString(l2))>0){
+                        lumens2Set.add(new Entry(lumens2Set.size(), Float.parseFloat(converttoString(l2))));
+                    }
+                    if (converttoString(l3)!= null && Float.parseFloat(converttoString(l3))>0){
+                        lumens3Set.add(new Entry(lumens3Set.size(), Float.parseFloat(converttoString(l3))));
+                    }
+                    if (converttoString(l4)!= null&& Float.parseFloat(converttoString(l4))>0){
+                        lumens4Set.add(new Entry(lumens4Set.size(), Float.parseFloat(converttoString(l4))));
+                    }
+                    SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
                 }
+
             }
         });
     }
-
     public static String converttoString(Object value) {
         if (value instanceof Integer || value instanceof Double) {
 
@@ -508,10 +229,103 @@ public class SensorDataFrag extends Fragment {
         }
     }
 
+    private void SensorData_Graph(List<Entry> t, List<Entry> h, List<Entry> l1, List<Entry> l2, List<Entry> l3, List<Entry> l4){
+        if (getActivity() != null){
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        handler.removeCallbacksAndMessages(null);
+            getActivity().runOnUiThread(()->{
+                if (t.isEmpty() && h.isEmpty() && l1.isEmpty()
+                        && l2.isEmpty() && l3.isEmpty() && l4.isEmpty()) {
+                    lineChart.setNoDataText("No Data to Show Today");
+                    lineChart.setNoDataTextColor(Color.BLACK);
+                } else {
+                    lineChart.setNoDataText("");
+                    LineDataSet temperatureDataSet = new LineDataSet(t, "Temperature");
+                    temperatureDataSet.setColor(Color.GREEN);
+                    temperatureDataSet.setValueTextColor(Color.RED);
+                    temperatureDataSet.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    temperatureDataSet.setDrawCircles(false);
+                    temperatureDataSet.setLineWidth(2f);
+                    temperatureDataSet.setValueTextSize(12f);
+
+                    LineDataSet humidityDataSet = new LineDataSet(h, "Humidity");
+                    humidityDataSet.setColor(Color.BLUE);
+                    humidityDataSet.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    humidityDataSet.setValueTextColor(Color.RED);
+                    humidityDataSet.setDrawCircles(false);
+                    humidityDataSet.setLineWidth(2f);
+                    humidityDataSet.setValueTextSize(12f);
+
+                    LineDataSet lumens1Dset = new LineDataSet(l1, "Lumens 1");
+                    humidityDataSet.setColor(Color.YELLOW);
+                    lumens1Dset.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    lumens1Dset.setValueTextColor(Color.RED);
+                    lumens1Dset.setDrawCircles(false);
+                    lumens1Dset.setLineWidth(2f);
+                    lumens1Dset.setValueTextSize(12f);
+
+                    LineDataSet lumens2Dset = new LineDataSet(l2, "Lumens 2");
+                    lumens2Dset.setColor(Color.BLUE); // Corrected color
+                    lumens2Dset.setValueTextColor(Color.RED);
+                    lumens2Dset.setDrawCircles(false);
+                    lumens2Dset.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    lumens2Dset.setLineWidth(2f);
+                    lumens2Dset.setValueTextSize(12f);
+
+                    LineDataSet lumens3Dset = new LineDataSet(l3, "Lumens 3");
+                    lumens3Dset.setColor(Color.RED);
+                    lumens3Dset.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    lumens3Dset.setValueTextColor(Color.RED);
+                    lumens3Dset.setDrawCircles(false);
+                    lumens3Dset.setLineWidth(2f);
+                    lumens3Dset.setValueTextSize(12f);
+
+                    LineDataSet lumens4Dset = new LineDataSet(l4, "Lumens 4");
+                    lumens4Dset.setColor(Color.MAGENTA);
+                    lumens4Dset.setValueFormatter(new DefaultAxisValueFormatter(2));
+                    lumens4Dset.setValueTextColor(Color.RED);
+                    lumens4Dset.setDrawCircles(false);
+                    lumens4Dset.setLineWidth(2f);
+                    lumens4Dset.setValueTextSize(12f);
+
+                    if (temp && humid && lumens1 && lumens2 && lumens3 && lumens4) {
+                        LineData lineData = new LineData(temperatureDataSet, humidityDataSet, lumens1Dset,
+                                lumens2Dset, lumens3Dset, lumens4Dset);
+                        lineChart.setData(lineData);
+                    } else if (temp) {
+                        LineData lineData = new LineData(temperatureDataSet);
+                        lineChart.setData(lineData);
+                    } else if (humid) {
+                        LineData lineData = new LineData(humidityDataSet);
+                        lineChart.setData(lineData);
+                    } else if (lumens1) {
+                        LineData lineData = new LineData(lumens1Dset);
+                        lineChart.setData(lineData);
+                    } else if (lumens2) {
+                        LineData lineData = new LineData(lumens2Dset);
+                        lineChart.setData(lineData);
+                    } else if (lumens3) {
+                        LineData lineData = new LineData(lumens3Dset);
+                        lineChart.setData(lineData);
+                    } else if (lumens4) {
+                        LineData lineData = new LineData(lumens4Dset);
+                        lineChart.setData(lineData);
+                    }
+
+                    Legend legend = lineChart.getLegend();
+                    legend.setTextSize(7);
+                    lineChart.getDescription().setEnabled(false); // Disable chart description
+                    XAxis xAxis = lineChart.getXAxis();
+                    xAxis.setEnabled(false);
+                    xAxis.setDrawLabels(true); // Enable X-axis labels
+                    xAxis.setGranularity(1f); // Ensure only integer labels are shown on X-axis
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
+                    YAxis yAxis = lineChart.getAxisLeft();
+                    lineChart.setGridBackgroundColor(Color.RED);
+                    lineChart.getAxisRight().setEnabled(false); // Disable right Y-axis
+                    lineChart.invalidate(); // Refresh chart data
+                }
+            });
+        }
     }
+
 }

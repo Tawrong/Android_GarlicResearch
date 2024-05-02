@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/topparent"
         app:layout_constraintEnd_toEndOf="@+id/endparent"
         app:layout_constraintStart_toStartOf="@+id/midparent"
-        app:layout_constraintTop_toTopOf="@+id/parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/user_profile_pic"
@@ -47,7 +47,7 @@
         android:id="@+id/user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/endparent"

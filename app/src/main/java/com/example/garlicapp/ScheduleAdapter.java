@@ -1,109 +1,53 @@
 package com.example.garlicapp;
 
-import android.util.Log;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
 import java.util.List;
 
-import io.realm.mongodb.App;
-import io.realm.mongodb.AppConfiguration;
-import io.realm.mongodb.Credentials;
-import io.realm.mongodb.User;
-import io.realm.mongodb.mongo.MongoCollection;
-
-public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
-
-    private static List<ScheduleItem> scheduleItemList;
-
-    public ScheduleAdapter(List<ScheduleItem> scheduleItemList) {
-        ScheduleAdapter.scheduleItemList = scheduleItemList;
+public class ScheduleAdapter extends RecyclerView.Adapter<Scheduler_viewHolder> {
+    private Context context;
+    private List<Scheduler_items> list;
+    private OnItemClickListener listener;
+    public ScheduleAdapter(Context context, List<Scheduler_items> list, OnItemClickListener listener) {
+        this.context = context;
+        this.list = list;
+        this.listener = listener;
     }
-
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.schedule_item_layout, parent, false);
-        return new ViewHolder(view);
+
+    public Scheduler_viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.scheduler_recyclerview_layout, parent, false);
+        return new Scheduler_viewHolder(view, this, listener); // Pass the adapter instance here
     }
+
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ScheduleItem scheduleItem = scheduleItemList.get(position);
-        holder.racknum.setText(scheduleItem.getRacknum());
-        holder.expireDateTextView.setText(scheduleItem.getExpireDate());
-        holder.timeStartTextView.setText(scheduleItem.getTimeStart());
-        holder.timeEndTextView.setText(scheduleItem.getTimeEnd());
-        holder.temperatureTextView.setText(scheduleItem.getTemperature());
-        holder.glsTextView.setText(scheduleItem.getGrowlights());
-    }
+    public void onBindViewHolder(@NonNull Scheduler_viewHolder holder, int position) {
+        holder.date.setText(list.get(position).getDate());
+        holder.timestart.setText(list.get(position).getTimeStart());
+        holder.timeend.setText(list.get(position).getTimeEnd());
 
+    }
     @Override
     public int getItemCount() {
-        return scheduleItemList.size();
+        return list.size();
+    }
+    public void updateData(List<Scheduler_items> newList) {
+        list.clear();
+        list.addAll(newList);
+        notifyDataSetChanged();
+    }
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView expireDateTextView;
-        public TextView timeStartTextView;
-        public TextView timeEndTextView, racknum, glsTextView, temperatureTextView;
-        public ImageView deleterowButton;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            deleterowButton = itemView.findViewById(R.id.DeleteRowButton);
-            expireDateTextView = itemView.findViewById(R.id.expireDateTextView);
-            timeStartTextView = itemView.findViewById(R.id.timeStartTextView);
-            timeEndTextView = itemView.findViewById(R.id.timeEndTextView);
-            racknum = itemView.findViewById(R.id.RackNum);
-            glsTextView = itemView.findViewById(R.id.glsTextView);
-            temperatureTextView = itemView.findViewById(R.id.temperatureTextView);
-
-
-            deleterowButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        ObjectId clickedObjectId = scheduleItemList.get(position).getObjectId();
-                        scheduleItemList.remove(position);
-                        notifyItemRemoved(position);
-
-                        deleteDocumentFromDatabase(clickedObjectId);
-                    }
-                } // Missing closing brace for onClick method
-            }); // Closing brace for setOnClickListener
-        }
-    }
-
-    private void deleteDocumentFromDatabase(ObjectId objectId) {
-        AppConfiguration appConfiguration = new AppConfiguration.Builder("devicesync-ehvrh").build();
-        App app = new App(appConfiguration);
-        app.loginAsync(Credentials.anonymous(), it -> {
-            if (it.isSuccess()) {
-                User user = app.currentUser();
-                MongoCollection<Document> collection = user.getMongoClient("garlicgreenhouse")
-                        .getDatabase("GarlicGreenhouse")
-                        .getCollection("schedule");
-                Document filter = new Document("_id", objectId);
-                collection.deleteOne(filter).getAsync(result -> {
-                    if (result.isSuccess()) {
-                        Log.d("Delete Sched", "Deleted Successfully");
-                    } else {
-                        Log.d("Delete Sched", "Deletion Failed");
-                    }
-                });
-            }
-        });
-    }
 
 }

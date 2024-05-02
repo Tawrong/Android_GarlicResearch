@@ -4,6 +4,7 @@
     android:textColor="@color/black"
     android:drawableEnd="@drawable/baseline_keyboard_arrow_down_24"
     android:drawableTint="@color/black"
+    android:textStyle="bold"
     android:layout_height="match_parent">
 
 </TextView>
