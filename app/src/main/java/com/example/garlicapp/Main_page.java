@@ -62,6 +62,7 @@ public class Main_page extends AppCompatActivity {
         AppConfiguration appConfiguration = new AppConfiguration.Builder(getString(R.string.App_id)).build();
         app = new App(appConfiguration);
 
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.toolbar);
@@ -114,6 +115,10 @@ public class Main_page extends AppCompatActivity {
                 switcFragments(new SensorDataFrag(), emptybundle);
             } else if (item.getItemId() == R.id.signout) {
                 signout();
+            } else if (item.getItemId() == R.id.tutorial) {
+                Intent intent = new Intent(Main_page.this, OnBoarding.class);
+                intent.putExtra("email_extra_users", getIntent().getStringExtra("email_extra_users"));
+                startActivity(intent);
             }
 
             if (item.getItemId() != R.id.DateStart && item.getItemId() != R.id.timeOnStart && item.getItemId() != R.id.timeOffEnd) {

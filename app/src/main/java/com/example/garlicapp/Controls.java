@@ -105,10 +105,10 @@ public class Controls extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         if (getActivity() != null) {
             Realm.init(requireContext());
         }
+
         View rootview = inflater.inflate(R.layout.fragment_controls, container, false);
         initializeViews(rootview);
         AppConfiguration appConfiguration = new AppConfiguration.Builder(getString(R.string.App_id)).build();
@@ -119,7 +119,7 @@ public class Controls extends Fragment {
         topics.add("garlicgreenhouse/rack3state");
         topics.add("garlicgreenhouse/rack4state");
         topics.add("garlicgreenhouse/ac_state");
-
+        login();
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -127,17 +127,20 @@ public class Controls extends Fragment {
             }
         });
         thread.start();
-        login();
         return rootview;
     }
 
     private void colorInvert(ConstraintLayout cv, Boolean state, ImageView imageView) {
         if (state) {
-            cv.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.control_buttons_design));
-            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_light_mode_green_24));
+           new Handler(Looper.getMainLooper()).post(()->{
+               cv.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.control_buttons_design));
+               imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_light_mode_green_24));
+           });
         } else {
-            cv.setBackground(ContextCompat.getDrawable(getContext(), R.color.white));
-            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_light_mode_24));
+            new Handler(Looper.getMainLooper()).post(()->{
+                cv.setBackground(ContextCompat.getDrawable(requireContext(), R.color.white));
+                imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_light_mode_24));
+            });
         }
     }
 
@@ -257,7 +260,7 @@ public class Controls extends Fragment {
         });
     }
 
-    private void toggleAc(Long temp, Boolean state) {
+    private void toggleAc(Long temp) {
         MongoCollection<Document> collection = user.getMongoClient("garlicgreenhouse")
                 .getDatabase("GarlicGreenhouse").getCollection("aircon_tmp");
         Document update = new Document("$set", new Document("status", true));
@@ -272,7 +275,7 @@ public class Controls extends Fragment {
 
     private void subscribeToTopics(ArrayList<String> topics) {
         final String broker = "tcp://broker.hivemq.com:1883"; // MQTT broker address
-        final String clientId = "mqttx_b27e895a";
+        final String clientId = MqttClient.generateClientId();
 
         try {
             mqttClient = new MqttClient(broker, clientId, new MemoryPersistence());
@@ -281,7 +284,7 @@ public class Controls extends Fragment {
             mqttClient.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
-                    // Handle connection lost
+
                 }
 
                 @Override
@@ -328,7 +331,44 @@ public class Controls extends Fragment {
                     }
                     if (topic.equals("garlicgreenhouse/ac_state")) {
                         String received = message.toString();
+                        double acs = Double.parseDouble(received);
+                        int ac = (int) acs;
+                        Log.e("AC", String.valueOf(ac));
+                        Integer cget = 0;
+                        if (ac == 17) {
+                            cget = 0;
+                        } else if (ac == 18) {
+                            cget = 1;
+                        } else if (ac == 19) {
+                            cget = 2;
+                        } else if (ac == 20) {
+                            cget = 3;
+                        } else if (ac == 21) {
+                            cget = 4;
+                        } else if (ac == 22) {
+                            cget = 5;
+                        } else if (ac == 23) {
+                            cget = 6;
+                        } else if (ac == 24) {
+                            cget = 7;
+                        } else if (ac == 25) {
+                            cget = 8;
+                        } else if (ac == 26) {
+                            cget = 9;
+                        } else if (ac == 27) {
+                            cget = 10;
+                        } else if (ac == 28) {
+                            cget = 11;
+                        } else if (ac == 29) {
+                            cget = 12;
+                        } else if (ac == 30) {
+                            cget = 13;
+                        }
 
+                        Integer finalCget = cget;
+                        new Handler(Looper.getMainLooper()).post(()->{
+                            seekBar.showAnimation(finalCget, 2000);
+                        });
                     }
 
                     Log.e("Mqtt Message", topic.toString() + " : " + message.toString());
@@ -371,20 +411,20 @@ public class Controls extends Fragment {
         }
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        if (thread != null && thread.isAlive()){
-//            thread.interrupt();
-//            try {
-//                if (mqttClient != null && mqttClient.isConnected()) {
-//                    mqttClient.disconnect();
-//                }
-//            } catch (MqttException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (thread != null && thread.isAlive()){
+            thread.interrupt();
+            try {
+                if (mqttClient != null && mqttClient.isConnected()) {
+                    mqttClient.disconnect();
+                }
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void onDestroy() {
@@ -417,7 +457,7 @@ public class Controls extends Fragment {
         seekBar.setOnChangeListener(new ArcSeekBar.OnChangeListener() {
             @Override
             public void onStartTrackingTouch(boolean isCanDrag) {
-
+                toggleAcOff();
             }
 
             @Override
@@ -457,8 +497,9 @@ public class Controls extends Fragment {
 
             @Override
             public void onStopTrackingTouch(boolean isCanDrag) {
-                String ac_current = current.toString();
-                Log.e("flaoter", String.valueOf(Float.parseFloat(ac_current)));
+                String ac_current = current.toString() + ".0";
+                sendMessage("garlicgreenhouse/ac_state", ac_current);
+                toggleAc(current.longValue());
             }
 
             @Override
@@ -565,5 +606,7 @@ public class Controls extends Fragment {
                 colorInvert(cl4, rack4State, rack4View);
             }
         });
+
     }
+
 }

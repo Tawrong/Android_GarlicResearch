@@ -18,6 +18,10 @@ import com.squareup.picasso.Transformation;
 
 import org.bson.Document;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import io.realm.mongodb.App;
 import io.realm.mongodb.AppConfiguration;
 import io.realm.mongodb.Credentials;
@@ -63,7 +67,7 @@ public class UserFragment extends Fragment {
         mongoLogin(app);
         return rootview;
     }
-
+    Date reg_datess;
     private void mongoLogin(App app) {
         app.loginAsync(Credentials.anonymous(), it -> {
             if (it.isSuccess()) {
@@ -72,21 +76,32 @@ public class UserFragment extends Fragment {
                         .getDatabase(getString(R.string.databaseNameUser))
                         .getCollection("users");
                 Document filter_user = new Document("email", default_user);
+                SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+
                 collection.find(filter_user).iterator().getAsync(result -> {
                     if (result.isSuccess()){
                         for (MongoCursor<Document> its = result.get();its.hasNext();){
+
                             Document document = its.next();
                             email = document.getString("email");
                             name = document.getString("name");
                             reg_date = String.valueOf(document.getDate("registration_date"));
                             imagesource = document.getString("imagesource");
+                            try {
+                                reg_datess = inputFormat.parse(reg_date);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                return;
+                            }
 
                         }
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                        Log.e("aaaaaa", reg_date);
                         if (getActivity() != null){
                             getActivity().runOnUiThread(()->{
                                 username.setText(name);
                                 useremail.setText(email);
-                                userdate.setText(reg_date);
+                                userdate.setText(outputFormat.format(reg_datess).toString());
                                 if (imagesource == null || imagesource.equals("null")){
                                     Drawable drawable = getResources().getDrawable(R.drawable.baseline_person_24);
                                     image_source.setImageDrawable(drawable);

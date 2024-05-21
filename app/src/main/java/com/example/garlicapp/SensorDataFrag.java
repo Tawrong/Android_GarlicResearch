@@ -41,13 +41,8 @@ public class SensorDataFrag extends Fragment {
     public SensorDataFrag() {
         // Required empty public constructor
     }
-
-    private EditText dates, dates2;
-
-    private String filter_date, filter_date2;
     private AppConfiguration config;
     private App app;
-    private Document filter;
 
     private LineChart lineChart;
     private Handler handler;

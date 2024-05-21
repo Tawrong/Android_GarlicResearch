@@ -37,6 +37,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -70,6 +71,8 @@ public class HomeFragment extends Fragment {
     private App app;
     private User user;
     private Thread thread;
+    private Base64 base64;
+
     private String MqttMessage_Temperature = null, MqttMessage_Humidity = null, MqttMessage_lumens1 = null,
             MqttMessage_lumens2 = null, MqttMessage_lumens3 = null, MqttMessage_lumens4 = null;
 
@@ -312,7 +315,10 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    handleMqttMessage(topic, message);
+                    String receivedMessage = message.toString();
+                    byte[] decodedMessage = Base64.getDecoder().decode(receivedMessage);
+                    String finaldecoded = new String(decodedMessage);
+                    handleMqttMessage(topic, finaldecoded);
                 }
 
                 @Override
@@ -351,26 +357,26 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void handleMqttMessage(String topic, MqttMessage message) {
-        String messageString = message.toString();
+    private void handleMqttMessage(String topic, String message) {
+        String messageString = message;
         switch (topic) {
             case "garlicgreenhouse/light1":
-                MqttMessage_lumens1 = message.toString();
+                MqttMessage_lumens1 = message;
                 break;
             case "garlicgreenhouse/light2":
-                MqttMessage_lumens2 = message.toString();
+                MqttMessage_lumens2 = message;
                 break;
             case "garlicgreenhouse/light3":
-                MqttMessage_lumens3 = message.toString();
+                MqttMessage_lumens3 = message;
                 break;
             case "garlicgreenhouse/light4":
-                MqttMessage_lumens4 = message.toString();
+                MqttMessage_lumens4 = message;
                 break;
             case "garlicgreenhouse/temperature":
-                MqttMessage_Temperature = message.toString();
+                MqttMessage_Temperature = message;
                 break;
             case "garlicgreenhouse/humidity":
-                MqttMessage_Humidity = message.toString();
+                MqttMessage_Humidity = message;
                 break;
         }
 
@@ -490,21 +496,21 @@ public class HomeFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        if (thread != null && thread.isAlive()){
-//            thread.interrupt();
-//            try {
-//                if (mqttClient != null && mqttClient.isConnected()) {
-//                    mqttClient.disconnect();
-//                }
-//            } catch (MqttException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (thread != null && thread.isAlive()){
+            thread.interrupt();
+            try {
+                if (mqttClient != null && mqttClient.isConnected()) {
+                    mqttClient.disconnect();
+                }
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 
     @Override
     public void onDestroy() {

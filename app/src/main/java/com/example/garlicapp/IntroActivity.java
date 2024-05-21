@@ -18,28 +18,23 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.introduction_layout);
-        button = findViewById(R.id.nextButton);
         int openCount = getOpenCount();
         openCount++;
         saveOpenCount(openCount);
-        if(openCount > 1){
+        if(openCount <= 1){
+            Intent intent = new Intent(IntroActivity.this, OnBoarding.class);
+            intent.putExtra("email_extra_users", getIntent().getStringExtra("email_extra_users"));
+            startActivity(intent);
+        } else if (openCount > 1) {
             Intent intent = new Intent(IntroActivity.this, Main_page.class);
             intent.putExtra("email_extra_users", getIntent().getStringExtra("email_extra_users"));
             startActivity(intent);
         }
+        Log.e("StartCount", String.valueOf(openCount));
         Log.e("Open", getIntent().getStringExtra("email_extra_users"));
-        Log.e("Open", String.valueOf(openCount));
+        setContentView(R.layout.introduction_layout);
+        button = findViewById(R.id.nextButton);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(IntroActivity.this, Main_page.class);
-                intent.putExtra("email_extra_users", getIntent().getStringExtra("email_extra_users"));
-                startActivity(intent);
-                Log.e("Open", getIntent().getStringExtra("email_extra_users"));
-            }
-        });
     }
 
     private int getOpenCount() {
