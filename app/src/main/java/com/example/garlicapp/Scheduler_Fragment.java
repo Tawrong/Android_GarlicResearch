@@ -6,8 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,7 @@ import com.applandeo.materialcalendarview.listeners.OnCalendarDayClickListener;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +65,7 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
     private Button cancelUpload, uploadButton;
     private List<String> selectedDates = new ArrayList<>(); // Declare the list
     private EditText start_time, end_time, password_sched;
+    private Spinner starttemp, endtemp;
 
     List<CalendarDay> calendarDays = new ArrayList<>();
     List<Calendar> disabledDays = new ArrayList<>();
@@ -73,32 +78,13 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
     private List<Scheduler_items> items = new ArrayList<>();
     private TextView toDelete, deleteEventText;
     private Button button, proceed_delete_event, cancel_delete_event;
-    private ObjectId objectId;
     private ScheduleAdapter adapter;
-    private View rootView;
+    private Button nextButton;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_scheduler_fragment, container, false);
-        calendarView = rootView.findViewById(R.id.calendarView);
-        button = rootView.findViewById(R.id.button);
-        deleteEventText = rootView.findViewById(R.id.password_event);
-        cancel_delete_event = rootView.findViewById(R.id.cancel_delete_event);
-        proceed_delete_event = rootView.findViewById(R.id.proceed_delete_event);
-        cancelUpload = rootView.findViewById(R.id.cancelUpload);
-        uploadButton = rootView.findViewById(R.id.uploadButton);
-        start_time = rootView.findViewById(R.id.startTime);
-        end_time = rootView.findViewById(R.id.endTime);
-        password_sched = rootView.findViewById(R.id.schedulerPassword);
-        Button nextButton = rootView.findViewById(R.id.nextButton);
-        cardView = rootView.findViewById(R.id.cardview_setTime);
-        calendarViewCardView = rootView.findViewById(R.id.cardviewCalendarView);
-        datepickerCardView = rootView.findViewById(R.id.datePickerCardview);
-        recyclerView = rootView.findViewById(R.id.recyclerView);
-        delete_event = rootView.findViewById(R.id.delete_event);
-        toDelete = rootView.findViewById(R.id.todelete);
-
-
+        View rootView = inflater.inflate(R.layout.fragment_scheduler_fragment, container, false);
+        initializeView(rootView);
         Button cancelButton = rootView.findViewById(R.id.cancelButton);
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
@@ -242,6 +228,7 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
                     end_time.setError("Can't be Empty"); // Fix: Set error for end_time
                 }
 
+
                 if (password_sched.getText().toString().trim().isEmpty()) {
                     isEmpty = true;
                     password_sched.setError("Can't be Empty"); // Fix: Set error for password_sched
@@ -252,7 +239,7 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
                 if (!isEmpty) {
                     uploadSched(selectedDates.get(0), selectedDates.get(selectedDates.size() - 1),
                             start_time.getText().toString(), end_time.getText().toString(), password_sched.getText().toString(),
-                            time_off_end2, time_off_start2);
+                            time_off_end2, time_off_start2, starttemp.getSelectedItem().toString(), endtemp.getSelectedItem().toString());
                     start_time.setText("");
                     end_time.setText("");
                     password_sched.setText("");
@@ -377,7 +364,7 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
                             calendar.add(Calendar.DAY_OF_MONTH, 1);
 
                         }
-
+                        button.setEnabled(false);
                     } else {
                         button.setEnabled(true);
                     }
@@ -397,7 +384,7 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
     }
 
     private void uploadSched(String start, String end, String start_time, String time_off, String password
-            , String time_off_end2, String time_off_start2) {
+            , String time_off_end2, String time_off_start2, String temperatureOn, String temperatureOff) {
         MongoCollection<Document> collection = user.getMongoClient("garlicgreenhouse")
                 .getDatabase("GarlicGreenhouse").getCollection("schedule");
         ObjectId randID = new ObjectId();
@@ -411,7 +398,9 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
                 .append("time_on_start", start_time)
                 .append("time_on_end", time_off)
                 .append("time_off_start", time_off_end2)
-                .append("time_off_end", time_off_start2);
+                .append("time_off_end", time_off_start2)
+                .append("temperature_on", temperatureOn)
+                .append("temperature_off", temperatureOff);
 
         collection.insertOne(insert).getAsync(result -> {
             if (result.isSuccess()) {
@@ -468,6 +457,61 @@ public class Scheduler_Fragment extends Fragment implements ScheduleAdapter.OnIt
                 UpdateCalendar();
             } else {
                 Log.e("DeleteItem", "Failed to delete item: " + result.getError().toString());
+            }
+        });
+    }
+    private void initializeView(View rootView){
+        calendarView = rootView.findViewById(R.id.calendarView);
+        button = rootView.findViewById(R.id.button);
+        deleteEventText = rootView.findViewById(R.id.password_event);
+        cancel_delete_event = rootView.findViewById(R.id.cancel_delete_event);
+        proceed_delete_event = rootView.findViewById(R.id.proceed_delete_event);
+        cancelUpload = rootView.findViewById(R.id.cancelUpload);
+        uploadButton = rootView.findViewById(R.id.uploadButton);
+        start_time = rootView.findViewById(R.id.startTime);
+        end_time = rootView.findViewById(R.id.endTime);
+        password_sched = rootView.findViewById(R.id.schedulerPassword);
+        nextButton = rootView.findViewById(R.id.nextButton);
+        cardView = rootView.findViewById(R.id.cardview_setTime);
+        calendarViewCardView = rootView.findViewById(R.id.cardviewCalendarView);
+        datepickerCardView = rootView.findViewById(R.id.datePickerCardview);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        delete_event = rootView.findViewById(R.id.delete_event);
+        toDelete = rootView.findViewById(R.id.todelete);
+        starttemp = rootView.findViewById(R.id.starttemp);
+        endtemp = rootView.findViewById(R.id.endtemp);
+
+        ArrayAdapter<CharSequence> starttempAdapter = ArrayAdapter.createFromResource(
+          getActivity(),
+          R.array.Aircon_Temperature,
+          R.layout.spinner_design
+        );
+        starttempAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        starttemp.setAdapter(starttempAdapter);
+        endtemp.setAdapter(starttempAdapter);
+        endtemp.setSelection(0);
+        starttemp.setSelection(0);
+
+        starttemp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("start", starttemp.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        endtemp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("end", endtemp.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }

@@ -9,10 +9,10 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "com.example.garlicapp"
-        minSdk 27
+        minSdk 26
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.01"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

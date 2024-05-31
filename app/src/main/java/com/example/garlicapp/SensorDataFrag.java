@@ -4,13 +4,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -26,7 +29,9 @@ import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.mongodb.App;
@@ -51,8 +56,11 @@ public class SensorDataFrag extends Fragment {
 
     private List<Entry> temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set;
 
-    private Spinner spinner;
+    private Spinner spinner, spinnerDate;
     private Object temperature, humidity, l1, l2, l3,l4;
+    private List<String> listDates = new ArrayList<>();
+    private Map<String, Document> dataMap = new HashMap<>();
+    private TextView tvTempval, tvHumidval, tvL1val, tvL2val, tvL3val, tvL4val;
 
 
     @Override
@@ -65,6 +73,13 @@ public class SensorDataFrag extends Fragment {
         app = new App(config);
         lineChart = rootview.findViewById(R.id.lineChart);
         spinner = rootview.findViewById(R.id.SpinnerGraph);
+        spinnerDate = rootview.findViewById(R.id.spinnerDate);
+        tvTempval = rootview.findViewById(R.id.tvTempVal);
+        tvHumidval = rootview.findViewById(R.id.tvHumidVal);
+        tvL1val = rootview.findViewById(R.id.tvl1Val);
+        tvL2val = rootview.findViewById(R.id.tvl2Val);
+        tvL3val = rootview.findViewById(R.id.tvl3Val);
+        tvL4val = rootview.findViewById(R.id.tvl4Val);
         ArrayAdapter<CharSequence> spinnerAdapter= ArrayAdapter.createFromResource(
                 getActivity(),
                 R.array.Sensor_Datas,
@@ -151,6 +166,19 @@ public class SensorDataFrag extends Fragment {
         lumens3Set = new ArrayList<>();
         lumens4Set = new ArrayList<>();
         login();
+        spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String choices = parent.getItemAtPosition(position).toString();
+                handleDateSelection(choices);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         return rootview;
     }
 
@@ -169,12 +197,13 @@ public class SensorDataFrag extends Fragment {
 
                new Handler(Looper.getMainLooper()).post(()->{
 
-                   Document sortTime = new Document("_id", 1);
+                   Document sortTime = new Document("date", 1);
 
                    search(collection, sortTime);
                });
            }
         });
+
     }
 
     private void search(MongoCollection<Document> collection,Document sortTime){
@@ -183,13 +212,15 @@ public class SensorDataFrag extends Fragment {
             if (result1.isSuccess()){
                 for (MongoCursor<Document> cursor = result1.get();cursor.hasNext();){
                     Document document = cursor.next();
+                    String avgDates = document.getString("date");
                     temperature = document.get("averageTemperature");
                     humidity = document.get("averageHumidity");
                     l1 = document.get("averageLumens1");
                     l2 = document.get("averageLumens2");
                     l3 = document.get("averageLumens3");
                     l4 = document.get("averageLumens4");
-
+                    dataMap.put(avgDates, document);
+                    listDates.add(avgDates);
                     if (converttoString(temperature) != null && Float.parseFloat(converttoString(temperature))>0){
                         temperatureSet.add(new Entry(temperatureSet.size(), Float.parseFloat(converttoString(temperature))));
                     }
@@ -210,6 +241,8 @@ public class SensorDataFrag extends Fragment {
                     }
                     SensorData_Graph(temperatureSet, humiditySet, lumens1Set, lumens2Set, lumens3Set, lumens4Set);
                 }
+
+                updateSpinner(listDates);
 
             }
         });
@@ -320,6 +353,40 @@ public class SensorDataFrag extends Fragment {
                     lineChart.invalidate(); // Refresh chart data
                 }
             });
+        }
+    }
+    private void updateSpinner(List<String> datesList) {
+        if (requireContext() != null){
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(),
+                    R.layout.spinner_design,
+                    datesList);
+            // Specify the layout to use when the list of choices appears
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            spinnerDate.setAdapter(spinnerAdapter);
+            spinnerDate.setSelection(listDates.size()-1);
+        }
+    }
+    private void handleDateSelection(String selectedDate) {
+        Document document = dataMap.get(selectedDate);
+
+        if (document != null) {
+            Object temperature = document.get("averageTemperature");
+            Object humidity = document.get("averageHumidity");
+            Object lumens1 = document.get("averageLumens1");
+            Object lumens2 = document.get("averageLumens2");
+            Object lumens3 = document.get("averageLumens3");
+            Object lumens4 = document.get("averageLumens4");
+
+            tvTempval.setText(converttoString(temperature) + "°C");
+            tvHumidval.setText(converttoString(humidity) + "%");
+            tvL1val.setText(converttoString(lumens1) + "lm");
+            tvL2val.setText(converttoString(lumens2) + "lm");
+            tvL3val.setText(converttoString(lumens3) + "lm");
+            tvL4val.setText(converttoString(lumens4) + "lm");
+        } else {
+            Log.e("Selected Data", "No data found for the selected date");
         }
     }
 

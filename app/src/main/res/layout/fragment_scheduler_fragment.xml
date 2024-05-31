@@ -20,10 +20,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/mainCardview"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:cardCornerRadius="12dp"
-        app:cardElevation="25dp"
+        app:cardElevation="12dp"
         app:layout_constraintBottom_toBottomOf="@+id/guideline5"
         app:layout_constraintEnd_toEndOf="@id/endVerticalGuide"
         app:layout_constraintStart_toStartOf="@+id/startVerticalGuide"
@@ -56,26 +57,25 @@
                         app:daysLabelsColor="@color/deep_blue"
                         app:eventsEnabled="true"
                         app:headerColor="@color/green"
+                        app:layout_constraintBottom_toTopOf="@+id/button"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
                         app:selectionBetweenMonthsEnabled="true"
                         app:swipeEnabled="false"
                         app:todayLabelColor="@color/black"
-                        app:type="one_day_picker"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toTopOf="@+id/button"
-                        />
+                        app:type="one_day_picker" />
 
                     <Button
                         android:id="@+id/button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Add Event"
                         android:backgroundTint="@color/green"
+                        android:text="Add Event"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/calendarView"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -103,6 +103,7 @@
                         android:defaultFocusHighlightEnabled="true"
                         app:daysLabelsColor="@color/deep_blue"
                         app:eventsEnabled="true"
+                        app:layout_constraintBottom_toTopOf="@+id/nextButton"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -110,20 +111,18 @@
                         app:selectionBetweenMonthsEnabled="true"
                         app:swipeEnabled="false"
                         app:todayLabelColor="@color/green"
-                        app:type="range_picker"
-                        app:layout_constraintBottom_toTopOf="@+id/nextButton"
-                        />
+                        app:type="range_picker" />
 
                     <Button
                         android:id="@+id/nextButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Next"
                         android:backgroundTint="@color/green"
-                        app:layout_constraintTop_toBottomOf="@+id/calendarViewdayPick"
+                        android:text="Next"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/cancelButton" />
+                        app:layout_constraintStart_toEndOf="@+id/cancelButton"
+                        app:layout_constraintTop_toBottomOf="@+id/calendarViewdayPick" />
 
                     <Button
                         android:id="@+id/cancelButton"
@@ -132,10 +131,10 @@
                         android:backgroundTint="@color/secondary"
                         android:text="Cancel"
                         android:textColor="@color/deep_blue"
-                        app:layout_constraintTop_toBottomOf="@+id/calendarViewdayPick"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/nextButton"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/calendarViewdayPick" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -144,7 +143,7 @@
                 android:id="@+id/cardview_setTime"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +159,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Set the Time duration for the Growlights."
+                        android:text="Set the Time duration and Temperature
+                         for the Growlights in the Nursery."
                         android:textColor="#12612b"
                         android:textSize="16dp"
                         android:textStyle="bold"
@@ -205,22 +205,66 @@
                         android:hint="Password"
                         android:inputType="text"
                         android:padding="12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/starttemp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/endTime" />
+
+                    <TextView
+                        android:id="@+id/startLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:text="Start Temperature"
+                        android:textSize="16dp"
+                        app:layout_constraintBottom_toTopOf="@id/endtemp"
+                        app:layout_constraintEnd_toStartOf="@id/starttemp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/schedulerPassword" />
+
+                    <Spinner
+                        android:id="@+id/starttemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        app:layout_constraintBottom_toTopOf="@id/endtemp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startLabel"
+                        app:layout_constraintTop_toBottomOf="@+id/schedulerPassword" />
+
+                    <TextView
+                        android:id="@+id/endLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:text="End Temperature"
+                        android:textSize="16dp"
+                        app:layout_constraintBottom_toTopOf="@id/uploadButton"
+                        app:layout_constraintEnd_toStartOf="@id/endtemp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/starttemp" />
+
+                    <Spinner
+                        android:id="@+id/endtemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        app:layout_constraintBottom_toTopOf="@id/uploadButton"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/endLabel"
+                        app:layout_constraintTop_toBottomOf="@+id/starttemp" />
 
                     <Button
                         android:id="@+id/uploadButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:backgroundTint="@color/green"
                         android:text="Done"
                         android:visibility="visible"
-                        android:backgroundTint="@color/green"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/cancelUpload"
-                        app:layout_constraintTop_toBottomOf="@+id/schedulerPassword" />
+                        app:layout_constraintTop_toBottomOf="@+id/endtemp" />
 
                     <Button
                         android:id="@+id/cancelUpload"
@@ -228,12 +272,12 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/secondary"
                         android:text="Cancel"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         android:textColor="@color/deep_blue"
                         android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/uploadButton"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/schedulerPassword" />
+                        app:layout_constraintTop_toBottomOf="@+id/endtemp" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -285,21 +329,20 @@
                         android:id="@+id/password_event"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/todelete"
-                        app:layout_constraintBottom_toTopOf="@+id/proceed_delete_event"
-                        android:hint="Password"
                         android:drawableEnd="@drawable/baseline_password_24"
                         android:drawableTint="@color/deep_blue"
-                        />
+                        android:hint="Password"
+                        app:layout_constraintBottom_toTopOf="@+id/proceed_delete_event"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/todelete" />
 
                     <Button
                         android:id="@+id/proceed_delete_event"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Delete"
                         android:backgroundTint="@color/red_delete"
+                        android:text="Delete"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/cancel_delete_event"
@@ -309,14 +352,13 @@
                         android:id="@+id/cancel_delete_event"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:backgroundTint="@color/secondary"
                         android:text="Cancel"
+                        android:textColor="@color/deep_blue"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/proceed_delete_event"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/password_event"
-                        android:backgroundTint="@color/secondary"
-                        android:textColor="@color/deep_blue"
-                        />
+                        app:layout_constraintTop_toBottomOf="@+id/password_event" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -328,24 +370,25 @@
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/cardview_design"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="12dp"
         app:layout_constraintBottom_toBottomOf="@id/botParentGuide"
         app:layout_constraintEnd_toEndOf="@id/endVerticalGuide"
         app:layout_constraintStart_toStartOf="@id/startVerticalGuide"
-        app:layout_constraintTop_toTopOf="@+id/guideline9"
-        app:cardElevation="12dp"
-        app:cardCornerRadius="18dp"
-        android:background="@drawable/cardview_design"
-        >
+        app:layout_constraintTop_toBottomOf="@id/mainCardview">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:padding="11dp"
                 android:id="@+id/recyclerView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="15dp"
+                android:padding="11dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -434,5 +477,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.60" />
+        app:layout_constraintGuide_percent="0.65" />
 </androidx.constraintlayout.widget.ConstraintLayout>

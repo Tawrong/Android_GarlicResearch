@@ -10,51 +10,58 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/rdlogo2"
-        android:label="GRC"
-        android:roundIcon="@drawable/bawang"
+        android:icon="@drawable/final_logo"
+        android:label="GarlicResearchCenter"
+        android:roundIcon="@drawable/final_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GarlicAPp"
         tools:targetApi="31">
         <activity
             android:name=".ViewPagerAdapter"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".OnBoarding"
-            android:screenOrientation="portrait"
-            android:exported="false">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false"
+            android:screenOrientation="portrait">
 
         </activity>
 
         <receiver
             android:name=".AlarmManager_Notification"
+            android:windowSoftInputMode="adjustResize"
             android:enabled="true"
             android:exported="true" />
 
         <activity
             android:name=".IntroActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ForgotPass"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".UserEdit"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Main_page"
             android:exported="true"
+
             android:label=""
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
             android:name=".SetUsername"
@@ -63,17 +70,18 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <meta-data
             android:name="preloaded_fonts"
+            android:value="1.01"
             android:resource="@array/preloaded_fonts" />
     </application>
 

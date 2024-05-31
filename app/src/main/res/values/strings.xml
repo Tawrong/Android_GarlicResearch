@@ -8,17 +8,19 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Remove or change this placeholder text -->
 
-
-    <string name="descrip1">The scheduler of the Android application, allowing users
-        to set up a schedule controlling the lights to turn on and off. This scheduler aims to be convenient for users.</string>
+    <string name="descrip0">The monitoring panel of the Android application, which displays real-time values of temperature, humidity, and lumen intensity.</string>
+    <string name="descrip1">The scheduler of the Android application, allowing users to set up a schedule controlling the lights to turn on and off.</string>
     <string name="descrip2">
         Users are able to control the light by switching on and off, and the temperature of the system by sliding the button.
     </string>
     <string name="descrip3">
-        Where you can modify you information
+        Shows the other feature of the android application where in users can View and Modify or edit their information.
     </string>
+    <string name="descrip4">Sensor datas, The data can be displayed with graphs, allowing the user to easily track the details.</string>
 
     <string name="vidlink1">https://www.mediafire.com/file/gm3lj4mdvm868qp/vid1.mp4/file</string>
     <string name="vidlink2">https://www.mediafire.com/file/gpzw3yogrb9xq02/vid2.mp4/file</string>
     <string name="vidlink3">https://www.mediafire.com/file/z7nfr78vohzlcbt/vid3.mp4/file</string>
+
+
 </resources>

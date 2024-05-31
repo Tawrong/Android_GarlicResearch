@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -29,6 +30,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.applandeo.materialcalendarview.utils.AppearanceUtilsKt;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         if (!NotificationPermission){
             requestNotif();
         }
-
+        Log.e("App Version", getVersion());
         Realm.init(this);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
@@ -367,6 +369,17 @@ public class MainActivity extends AppCompatActivity {
         }else{
             requespermissionlauncher.launch(permission[0]);
         }
+    }
+
+    private String getVersion(){
+        try {
+            PackageManager packageManager = this.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(this.getPackageName(), 0);
+            return packageInfo.versionName;
+        }catch (PackageManager.NameNotFoundException e){
+            Log.e("PPPP", e.getMessage());
+        }
+        return null;
     }
     private final ActivityResultLauncher<String> requespermissionlauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranter->{

@@ -169,7 +169,7 @@ public class SetUsername extends AppCompatActivity {
         collection.insertOne(newUserDocument).getAsync(result -> {
             if (result.isSuccess()) {
                 Log.v("EXAMPLE", "Inserted new user: " + username);
-                Intent intent = new Intent(getApplicationContext(), Main_page.class);
+                Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
                 intent.putExtra("email_extra_users", email);
                 startActivity(intent);
             } else {

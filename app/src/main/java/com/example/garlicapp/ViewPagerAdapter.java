@@ -18,21 +18,28 @@ public class ViewPagerAdapter extends PagerAdapter {
     private VideoView[] videoViews;
 
     String[] sliderAllTitle = {
+            "Monitoring Panel",
             "Add Schedule",
             "Light And AC Control",
+            "Average Sensor Data",
             "Edit Profile"
     };
 
     int[] sliderAllDesc = {
+            R.string.descrip0,
             R.string.descrip1,
             R.string.descrip2,
+            R.string.descrip4,
             R.string.descrip3
+
     };
 
     int[] vidResources = {
-            R.raw.s1,
-            R.raw.vid,
-            R.raw.s1
+            R.raw.monitoring_panel,
+            R.raw.addsched_f,
+            R.raw.control_f,
+            R.raw.sensor_data,
+            R.raw.user_f
     };
 
     public ViewPagerAdapter(Context context) {

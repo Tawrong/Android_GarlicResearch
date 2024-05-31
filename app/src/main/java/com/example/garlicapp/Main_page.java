@@ -59,15 +59,14 @@ public class Main_page extends AppCompatActivity {
         Realm.init(this);
         Bundle emptybundle = null;
         switcFragments(new HomeFragment(), emptybundle);
+
         AppConfiguration appConfiguration = new AppConfiguration.Builder(getString(R.string.App_id)).build();
         app = new App(appConfiguration);
-
-
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.toolbar);
         handler = new Handler(Looper.getMainLooper());
-
+        lastSelectedItem = null;
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         setupNavigationDrawer(actionBar);
@@ -100,6 +99,7 @@ public class Main_page extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putString("user_email_extraEdit", getIntent().getStringExtra("email_extra_users"));
             Bundle emptybundle = null;
+
             if (lastSelectedItem != null) {
                 lastSelectedItem.setEnabled(true);
             }
@@ -126,7 +126,6 @@ public class Main_page extends AppCompatActivity {
                 lastSelectedItem = item;
                 drawerLayout.closeDrawer(GravityCompat.START);
             }
-
             return true;
         });
     }
